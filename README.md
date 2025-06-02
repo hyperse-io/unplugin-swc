@@ -71,6 +71,23 @@ unpluginSwc.vite({
 });
 ```
 
+If you are using TypeORM with Vitest and need support for decorators, you can switch from `esbuild` to `SWC` by configuring Vitest as follows:
+
+```ts
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { configDefaults, defineConfig } from 'vitest/config';
+import { unpluginSwc } from '@hyperse/unplugin-swc';
+
+export default defineConfig({
+  plugins: [tsconfigPaths(), unpluginSwc.vite({})],
+  test: {
+    globals: true,
+    exclude: [...configDefaults.exclude],
+    include: ['**/?(*.){test,spec}.?(c|m)[jt]s?(x)'],
+  },
+});
+```
+
 ### Minification
 
 Use the `minify: true` option, it only works for Rollup as Vite uses esbuild to minify the code and cannot be changed.
