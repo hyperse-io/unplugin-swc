@@ -68,7 +68,7 @@ jobs:
         run: |
           yarn test
 
-      - name: Build lib-path-alias
+      - name: Build
         working-directory: ./
         run: |
           yarn build
