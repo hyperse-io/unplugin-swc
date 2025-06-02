@@ -1,7 +1,7 @@
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { rollup } from 'rollup';
-import { unpluginSwc } from '../dist/index.js';
+import { unpluginSwc } from '../src/index.js';
 
 const getDirname = (url: string, ...paths: string[]) => {
   return join(dirname(fileURLToPath(url)), ...paths);
