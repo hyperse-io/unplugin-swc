@@ -1,17 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "@hyperse/eslint-config-hyperse/tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2020",
-    "module": "NodeNext",
-    "strict": true,
     "baseUrl": "./",
-    "esModuleInterop": true,
-    "moduleResolution": "NodeNext",
-    "skipLibCheck": true,
-    "noUnusedLocals": true,
-    "noImplicitAny": true,
-    "allowJs": true,
-    "resolveJsonModule": true
+    "outDir": "dist",
+    "rootDir": ".",
+    "types": ["vitest/globals", "node"]
   },
-  "exclude": ["**/node_modules", "**/.*/", "dist", "build", "test"]
+  "exclude": ["**/node_modules", "**/.*/", "dist", "build", "fixtures"]
 }

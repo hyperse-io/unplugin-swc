@@ -1,1 +1,4 @@
-export const App = () => <div>hi</div>
+export const App = () => {
+  // @ts-ignore
+  return <div>hi</div>;
+};

@@ -1,24 +1,34 @@
 // src/index.ts
-import path from "path";
-import { createFilter } from "@rollup/pluginutils";
-import {
-  transform
-} from "@swc/core";
 import { defu } from "defu";
-import { loadTsConfig } from "load-tsconfig";
+import { getTsconfig } from "get-tsconfig";
+import path from "path";
 import { createUnplugin } from "unplugin";
+import { createFilter } from "@rollup/pluginutils";
+import { transform } from "@swc/core";
 
 // src/resolve.ts
 import fs from "fs";
 import { dirname, join, resolve } from "path";
 import { pathExists } from "path-exists";
-var RESOLVE_EXTENSIONS = [".tsx", ".ts", ".jsx", ".js", ".mjs", ".cjs"];
+var RESOLVE_EXTENSIONS = [
+  ".tsx",
+  ".ts",
+  ".mts",
+  ".jsx",
+  ".js",
+  ".mjs",
+  ".cjs"
+];
 var resolveFile = async (resolved, index = false) => {
+  resolved = resolved.replace(/\.(js|jsx|cjs|mjs|ts|tsx|mts|cts)$/gi, "");
+  console.log("resolved", resolved, index);
   for (const ext of RESOLVE_EXTENSIONS) {
     const file = index ? join(resolved, `index${ext}`) : `${resolved}${ext}`;
-    if (await pathExists(file))
+    if (await pathExists(file)) {
       return file;
+    }
   }
+  return void 0;
 };
 var resolveId = async (importee, importer) => {
   if (importer && importee[0] === ".") {
@@ -32,107 +42,103 @@ var resolveId = async (importee, importer) => {
     }
     return resolved;
   }
+  return void 0;
 };
 
 // src/index.ts
-var swcUnpluginTs = createUnplugin(
-  ({
-    tsconfigFile,
-    minify,
-    include,
-    exclude,
-    ...options
-  } = {}) => {
-    const filter = createFilter(
-      include || /\.[jt]sx?$/,
-      exclude || /node_modules/
-    );
-    return {
-      name: "swc",
-      resolveId,
-      async transform(code, id) {
-        if (!filter(id))
-          return null;
-        const compilerOptions = tsconfigFile === false ? {} : loadTsConfig(
-          path.dirname(id),
-          tsconfigFile === true ? void 0 : tsconfigFile
-        )?.data?.compilerOptions || {};
-        const isTs = /\.tsx?$/.test(id);
-        let jsc = {
-          parser: {
-            syntax: isTs ? "typescript" : "ecmascript"
-          },
-          transform: {}
-        };
-        if (compilerOptions.jsx) {
-          Object.assign(jsc.parser || {}, {
-            [isTs ? "tsx" : "jsx"]: true
-          });
-          Object.assign(jsc.transform || {}, {
-            react: {
-              pragma: compilerOptions.jsxFactory,
-              pragmaFrag: compilerOptions.jsxFragmentFactory,
-              importSource: compilerOptions.jsxImportSource
-            }
-          });
-        }
+var unpluginSwc = createUnplugin((swcOptions = {}) => {
+  const { tsconfigFile, minify, include, exclude, ...options } = swcOptions;
+  const filter = createFilter(
+    include || /\.m?[jt]sx?$/,
+    exclude || /node_modules/
+  );
+  return {
+    name: "unplugin-swc",
+    resolveId,
+    async transform(code, id) {
+      if (!filter(id)) {
+        return null;
+      }
+      const compilerOptions = tsconfigFile === false ? {} : getTsconfig(
+        path.dirname(id),
+        tsconfigFile === true ? void 0 : tsconfigFile
+      )?.config?.compilerOptions || {};
+      const isTs = /\.m?tsx?$/.test(id);
+      let jsc = {
+        parser: {
+          syntax: isTs ? "typescript" : "ecmascript"
+        },
+        transform: {}
+      };
+      if (compilerOptions.jsx) {
+        Object.assign(jsc.parser || {}, {
+          [isTs ? "tsx" : "jsx"]: true
+        });
         Object.assign(jsc.transform || {}, {
-          useDefineForClassFields: compilerOptions.useDefineForClassFields || false
+          react: {
+            pragma: compilerOptions.jsxFactory,
+            pragmaFrag: compilerOptions.jsxFragmentFactory,
+            importSource: compilerOptions.jsxImportSource
+          }
         });
-        if (compilerOptions.experimentalDecorators) {
-          jsc.keepClassNames = true;
-          Object.assign(jsc.parser || {}, {
-            decorators: true
-          });
-          Object.assign(jsc.transform || {}, {
-            legacyDecorator: true,
-            decoratorMetadata: compilerOptions.emitDecoratorMetadata
-          });
-        }
-        if (compilerOptions.target) {
-          jsc.target = compilerOptions.target;
-        }
-        if (options.jsc) {
-          jsc = defu(options.jsc, jsc);
-        }
-        const result = await transform(code, {
-          filename: id,
-          sourceMaps: true,
-          ...options,
-          jsc
+      }
+      Object.assign(jsc.transform || {}, {
+        // https://www.typescriptlang.org/tsconfig#useDefineForClassFields
+        useDefineForClassFields: compilerOptions.useDefineForClassFields || false
+      });
+      if (compilerOptions.experimentalDecorators) {
+        jsc.keepClassNames = true;
+        Object.assign(jsc.parser || {}, {
+          decorators: true
         });
+        Object.assign(jsc.transform || {}, {
+          legacyDecorator: true,
+          decoratorMetadata: compilerOptions.emitDecoratorMetadata
+        });
+      }
+      if (compilerOptions.target) {
+        jsc.target = compilerOptions.target.toLowerCase();
+      }
+      if (options.jsc) {
+        jsc = defu(options.jsc, jsc);
+      }
+      const result = await transform(code, {
+        filename: id,
+        sourceMaps: true,
+        ...options,
+        jsc
+      });
+      return {
+        code: result.code,
+        map: result.map && JSON.parse(result.map)
+      };
+    },
+    vite: {
+      config() {
         return {
-          code: result.code,
-          map: result.map && JSON.parse(result.map)
+          esbuild: false
         };
-      },
-      vite: {
-        config() {
+      }
+    },
+    rollup: {
+      async renderChunk(code, chunk) {
+        if (minify) {
+          const result = await transform(code, {
+            minify: true,
+            sourceMaps: true,
+            filename: chunk.fileName
+          });
           return {
-            esbuild: false
+            code: result.code,
+            map: result.map
           };
         }
-      },
-      rollup: {
-        async renderChunk(code, chunk) {
-          if (minify) {
-            const result = await transform(code, {
-              sourceMaps: true,
-              minify: true,
-              filename: chunk.fileName
-            });
-            return {
-              code: result.code,
-              map: result.map
-            };
-          }
-          return null;
-        }
+        return null;
       }
-    };
-  }
-);
+    }
+  };
+});
 export {
-  swcUnpluginTs
+  unpluginSwc
 };
 //# sourceMappingURL=index.js.map

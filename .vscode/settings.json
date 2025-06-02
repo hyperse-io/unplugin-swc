@@ -1,11 +1,11 @@
 {
   "typescript.preferences.importModuleSpecifier": "relative",
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit",
-        "source.organizeImports": "never"
-      },
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "never",
+    },
     "files.associations": {
       "*.css": "tailwindcss"
     },
@@ -14,4 +14,10 @@
     "[javascript]": {
       "editor.formatOnSave": false
     },
+    "[json]": {
+      "editor.formatOnSave": false,
+    },
+    "[jsonc]": {
+      "editor.formatOnSave": false,
+    }
 }

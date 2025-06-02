@@ -1,33 +1,46 @@
-A fork of [unplugin-swc](https://github.com/egoist/unplugin-swc) by [egoist](https://github.com/egoist) — which makes it into a module, that can purposefully be used in a Vite project such as SvelteKit.
+# @hyperse/unplugin-swc
 
----
+<p align="left">
+  <a aria-label="Build" href="https://github.com/hyperse-io/unplugin-swc/actions?query=workflow%3ACI">
+    <img alt="build" src="https://img.shields.io/github/actions/workflow/status/hyperse-io/unplugin-swc/ci-integrity.yml?branch=main&label=ci&logo=github&style=flat-quare&labelColor=000000" />
+  </a>
+  <a aria-label="stable version" href="https://www.npmjs.com/package/@hyperse/unplugin-swc">
+    <img alt="stable version" src="https://img.shields.io/npm/v/%40hyperse%2Funplugin-swc?branch=main&label=version&logo=npm&style=flat-quare&labelColor=000000" />
+  </a>
+  <a aria-label="Top language" href="https://github.com/hyperse-io/unplugin-swc/search?l=typescript">
+    <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/hyperse-io/unplugin-swc?style=flat-square&labelColor=000&color=blue">
+  </a>
+  <a aria-label="Licence" href="https://github.com/hyperse-io/unplugin-swc/blob/main/LICENSE">
+    <img alt="Licence" src="https://img.shields.io/github/license/hyperse-io/unplugin-swc?style=flat-quare&labelColor=000000" />
+  </a>
+</p>
 
-# unplugin-swc
+> A high-performance [SWC](https://swc.rs/) plugin for Vite and Rollup that provides fast TypeScript/JavaScript compilation and transformation.
 
-[![npm version](https://badgen.net/npm/v/unplugin-swc)](https://npm.im/unplugin-swc)
+## Features
 
-> [SWC](https://swc.rs/) plugin for Vite and Rollup.
-
-## Install
-
-Clone project and build using `tsc build`. npm pack, and include that file to a project `pnpm add ./unplugin-swc.tgz`
+- 🚀 Lightning fast compilation with SWC
+- 🔄 Seamless integration with Vite and Rollup
+- ⚙️ Full TypeScript support with decorator transformations
+- 🛠 Configurable through tsconfig.json or .swcrc
+- 📦 Minification support for Rollup builds
 
 ## Usage
 
 Vite or Rollup:
 
 ```ts
-import swc from 'unplugin-swc'
+import { unpluginSwc } from '@hyperse/unplugin-swc';
 
 export default {
-   plugins: [
-      swc.vite({
-         jsc: {
-            target: 'es2022' // Does not accept `esnext`	}
-         }
-      })
-   ]
-}
+  plugins: [
+    unpluginSwc.vite({
+      jsc: {
+        target: 'es2022', // Does not accept `esnext`	}
+      },
+    }),
+  ],
+};
 ```
 
 ### `tsconfig.json`
@@ -48,14 +61,14 @@ If you wish to disable this behavior and use `.swcrc` to control above `jsc` opt
 
 ```ts
 // Or swc.rollup
-swc.vite({
+unpluginSwc.vite({
   tsconfigFile: false,
-})
+});
 
 // It's also possible to use a custom tsconfig file instead of tsconfig.json
-swc.vite({
+unpluginSwc.vite({
   tsconfigFile: './tsconfig.build.json',
-})
+});
 ```
 
 ### Minification
@@ -98,7 +111,3 @@ Files to exclude in the transpilation process.
 - Type: `object`
 
 Custom [jsc](https://swc.rs/docs/configuration/compilation) options to merge with the default one.
-
-## License
-
-MIT &copy; [EGOIST](https://github.com/sponsors/egoist)

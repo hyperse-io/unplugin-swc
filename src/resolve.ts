@@ -1,14 +1,28 @@
-import fs from 'fs';
-import { dirname, join, resolve } from 'path';
+import fs from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { pathExists } from 'path-exists';
 
-const RESOLVE_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs'];
+const RESOLVE_EXTENSIONS = [
+  '.tsx',
+  '.ts',
+  '.mts',
+  '.cts',
+  '.jsx',
+  '.js',
+  '.mjs',
+  '.cjs',
+];
 
 const resolveFile = async (resolved: string, index = false) => {
+  resolved = resolved.replace(/\.(js|jsx|cjs|mjs|ts|tsx|mts|cts)$/gi, '');
+
   for (const ext of RESOLVE_EXTENSIONS) {
     const file = index ? join(resolved, `index${ext}`) : `${resolved}${ext}`;
-    if (await pathExists(file)) return file;
+    if (await pathExists(file)) {
+      return file;
+    }
   }
+  return undefined;
 };
 
 export const resolveId = async (importee: string, importer?: string) => {
@@ -30,4 +44,5 @@ export const resolveId = async (importee: string, importer?: string) => {
 
     return resolved;
   }
+  return undefined;
 };
