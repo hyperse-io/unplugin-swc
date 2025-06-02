@@ -1,4 +1,4 @@
-name: CI-lib
+name: CI-integrity
 
 on:
   push:
