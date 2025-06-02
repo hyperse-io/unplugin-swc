@@ -1,6 +1,6 @@
 {
   "name": "@hyperse/unplugin-swc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "SWC plugin for Vite and Rollup supporting ESM modules",
   "homepage": "https://github.com/hyperse-io/unplugin-swc/tree/main/#readme",
   "bugs": {
