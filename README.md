@@ -79,6 +79,7 @@ import { configDefaults, defineConfig } from 'vitest/config';
 import { unpluginSwc } from '@hyperse/unplugin-swc';
 
 export default defineConfig({
+  // `esbuild` will be automatically disabled if you use this plugin.
   plugins: [tsconfigPaths(), unpluginSwc.vite({})],
   test: {
     globals: true,
