@@ -129,3 +129,10 @@ Files to exclude in the transpilation process.
 - Type: `object`
 
 Custom [jsc](https://swc.rs/docs/configuration/compilation) options to merge with the default one.
+
+## Additional Resources
+
+For automatic resolution of TypeScript path aliases from tsconfig.json in Rollup, you can check out:
+
+- [rollup-plugin-typescript-paths](https://github.com/simonhaenisch/rollup-plugin-typescript-paths) - Plugin specifically for resolving TypeScript path aliases
+- [Example implementation in @hyperse/config-loader](https://github.com/hyperse-io/config-loader/blob/main/src/plugins/resolveTsconfigPaths.ts)
