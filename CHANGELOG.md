@@ -1,5 +1,11 @@
 # @hyperse/unplugin-swc
 
+## 1.0.2
+
+### Patch Changes
+
+- [`5c5680e`](https://github.com/hyperse-io/unplugin-swc/commit/5c5680eec02e7c48999bfab9822d7907d6f79b75) Thanks [@tianyingchun](https://github.com/tianyingchun)! - bump version
+
 ## 1.0.1
 
 ### Patch Changes
