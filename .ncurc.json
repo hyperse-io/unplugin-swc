@@ -1,9 +1,4 @@
 {
-  "dep": [
-    "prod",
-    "dev",
-    "optional",
-    "packageManager"
-  ],
+  "dep": ["prod", "dev", "optional", "packageManager"],
   "reject": []
 }
